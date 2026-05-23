@@ -3,7 +3,7 @@ interface FeishuCardMessage {
   card: any
 }
 
-export async function sendToFeishu(report: string): Promise<void> {
+export async function sendToFeishu(report: string, cardTitle?: string): Promise<void> {
   const webhookUrl = process.env.FEISHU_WEBHOOK_URL
   if (!webhookUrl) {
     console.error('未设置 FEISHU_WEBHOOK_URL')
@@ -14,22 +14,13 @@ export async function sendToFeishu(report: string): Promise<void> {
     msg_type: 'interactive',
     card: {
       header: {
-        title: { tag: 'plain_text', content: '📊 每日自选股技术分析' },
+        title: { tag: 'plain_text', content: cardTitle || '📊 每日自选股技术分析' },
         template: 'blue',
       },
       elements: [
         {
           tag: 'markdown',
           content: report,
-        },
-        {
-          tag: 'hr',
-        },
-        {
-          tag: 'note',
-          elements: [
-            { tag: 'plain_text', content: '⚠️ 本分析由AI生成，仅供参考，不构成投资建议。投资有风险，入市需谨慎。' },
-          ],
         },
       ],
     },

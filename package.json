@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "analyze": "tsx src/index.ts",
+    "market": "tsx src/market-analysis.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.64",
     "ai": "^6.0.184",
     "dotenv": "^17.4.2",
+    "pinyin-pro": "^3.28.1",
     "zod": "^3.23.0"
   },
   "devDependencies": {
