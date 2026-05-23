@@ -58,7 +58,7 @@ export async function fetchLimitUpData(): Promise<LimitUpData> {
         turnover,
         consecutiveDays: item.f161,
         sector: item.f100 || '其它',
-        isOneWord: item.is_one_word_force || (item.f17 === item.f15 && item.f18 === item.f15),
+        isOneWord: item.is_one_word_force,
         is20Percent: code.startsWith('300') || code.startsWith('688'),
         is30Percent: code.startsWith('8') || code.startsWith('4'),
         isHighTurnover: turnover > 4000000000,
