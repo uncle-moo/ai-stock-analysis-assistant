@@ -289,7 +289,6 @@ body{
     <span style="color:#1565c0"><b>蓝字</b> 20%涨幅(创业板/科创板)</span>
     <span style="color:#6a1b9a"><b>紫字</b> 30%涨幅(北交所)</span>
   </div>
-  <span>数据来源: 东方财富</span>
 </div>
 </div>
 </body>
