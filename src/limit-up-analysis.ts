@@ -26,12 +26,14 @@ async function main() {
     const outputDir = path.join(PROJECT_ROOT, 'output')
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true })
 
-    const htmlPath = path.join(outputDir, 'limit-up-latest.html')
+    const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+    const filename = `limit-up-${today}.html`
+    const htmlPath = path.join(outputDir, filename)
     fs.writeFileSync(htmlPath, html, 'utf8')
     console.log(`HTML 已保存至: ${htmlPath}`)
 
     // GitHub 预览链接 (htmlpreview.github.io 可渲染 raw HTML)
-    const githubUrl = 'https://htmlpreview.github.io/?https://raw.githubusercontent.com/uncle-moo/ai-stock-analysis-assistant/main/output/limit-up-latest.html'
+    const githubUrl = `https://htmlpreview.github.io/?https://raw.githubusercontent.com/uncle-moo/ai-stock-analysis-assistant/main/output/${filename}`
 
     // 推送飞书消息（含 GitHub 链接）
     if (process.env.FEISHU_WEBHOOK_URL) {
