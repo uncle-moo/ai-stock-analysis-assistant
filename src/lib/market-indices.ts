@@ -38,41 +38,42 @@ export const INDICES: IndexConfig[] = [
   { code: '000688.SH', name: '科创50', emSecid: '1.000688' },
 ]
 
-const EASTMONEY_KLINE_URL = 'https://push2his.eastmoney.com/api/qt/stock/kline/get'
+const TENCENT_KLINE_URL = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get'
 const EASTMONEY_MARKET_URL = 'https://push2.eastmoney.com/api/qt/ulist.rt/get'
 const EASTMONEY_NORTHBOUND_URL = 'https://push2.eastmoney.com/api/qt/kamt.rt/get'
 
-function parseEastMoneyKlines(data: any): KLine[] {
-  const klines: KLine[] = []
-  for (const item of (data?.data?.klines ?? [])) {
-    const parts = item.split(',')
-    klines.push({
-      date: parts[0],
-      open: parseFloat(parts[1]),
-      close: parseFloat(parts[2]),
-      high: parseFloat(parts[3]),
-      low: parseFloat(parts[4]),
-      volume: parseFloat(parts[5]),
-      amount: parseFloat(parts[6]),
-    })
-  }
-  return klines
+function toTencentCode(emSecid: string): string {
+  const [prefix, code] = emSecid.split('.')
+  return `${prefix === '1' ? 'sh' : 'sz'}${code}`
 }
 
-async function fetchEastMoneyKlines(secid: string, days: number): Promise<{ klines: KLine[]; name: string }> {
-  const url = `${EASTMONEY_KLINE_URL}?secid=${secid}&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&klt=101&fqt=1&end=20500101&lmt=${days}`
+function parseTencentKlines(data: any): KLine[] {
+  const codeKey = Object.keys(data?.data ?? {})[0]
+  const dayData = data?.data?.[codeKey]?.day ?? []
+  return dayData.map((item: string[]) => ({
+    date: item[0],
+    open: parseFloat(item[1]),
+    close: parseFloat(item[2]),
+    high: parseFloat(item[3]),
+    low: parseFloat(item[4]),
+    volume: parseFloat(item[5]),
+  }))
+}
+
+async function fetchTencentKlines(code: string, days: number): Promise<KLine[]> {
+  const url = `${TENCENT_KLINE_URL}?param=${code},day,,,${days},qfq`
   const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0', Referer: 'https://quote.eastmoney.com/' },
+    headers: { 'User-Agent': 'Mozilla/5.0', Referer: 'https://finance.qq.com/' },
   })
-  if (!res.ok) throw new Error(`东方财富请求失败: ${res.status}`)
+  if (!res.ok) throw new Error(`腾讯请求失败: ${res.status}`)
   const json = await res.json()
-  if (!json?.data?.klines?.length) throw new Error('东方财富无数据')
-  const klines = parseEastMoneyKlines(json)
-  return { klines, name: json.data.name ?? '' }
+  if (!json?.data || json.code !== 0) throw new Error('腾讯K线无数据')
+  return parseTencentKlines(json)
 }
 
 async function fetchSingleIndex(config: IndexConfig, days = 60): Promise<StockData> {
-  const { klines, name } = await fetchEastMoneyKlines(config.emSecid, days)
+  const tencentCode = toTencentCode(config.emSecid)
+  const klines = await fetchTencentKlines(tencentCode, days)
   if (klines.length === 0) throw new Error('空K线数据')
 
   const last = klines[klines.length - 1]
@@ -81,7 +82,7 @@ async function fetchSingleIndex(config: IndexConfig, days = 60): Promise<StockDa
 
   return {
     code: config.code,
-    name: name || config.name,
+    name: config.name,
     price: last.close,
     changePercent,
     changeAmount: last.close - prev.close,
@@ -90,7 +91,7 @@ async function fetchSingleIndex(config: IndexConfig, days = 60): Promise<StockDa
     open: last.open,
     volume: last.volume,
     klines,
-    source: 'eastmoney',
+    source: 'tencent',
   }
 }
 

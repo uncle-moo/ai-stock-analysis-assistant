@@ -1,7 +1,7 @@
 import { StockData, KLine, Market } from './types.js'
 
 const SINA_REALTIME_URL = 'https://hq.sinajs.cn/list='
-const EASTMONEY_KLINE_URL = 'https://push2his.eastmoney.com/api/qt/stock/kline/get'
+const TENCENT_KLINE_URL = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get'
 const SINA_HISTORICAL_URL = 'https://quotes.money.163.com/service/chddata.html'
 
 function detectMarket(code: string): Market {
@@ -19,13 +19,13 @@ function normalizeCode(code: string): string {
   return code.replace(/\.(SZ|SH)$/i, '')
 }
 
-function toEastMoneySecid(code: string, market: Market): string {
+function toTencentCode(code: string, market: Market): string {
   const raw = normalizeCode(code)
   if (market === 'A') {
-    const prefix = raw.startsWith('6') || raw.startsWith('9') ? '1' : '0'
-    return `${prefix}.${raw}`
+    const prefix = raw.startsWith('6') || raw.startsWith('9') ? 'sh' : 'sz'
+    return `${prefix}${raw}`
   }
-  if (market === 'HK') return `2.${raw}`
+  if (market === 'HK') return `hk${raw}`
   return raw
 }
 
@@ -79,34 +79,34 @@ function parseSinaHistorical(csvText: string, code: string): KLine[] {
   return klines.reverse()
 }
 
-function parseEastMoneyKline(data: any, code: string): { klines: KLine[]; name: string } {
-  const klines: KLine[] = []
-  const klineJson = data?.data?.klines ?? []
-  for (const item of klineJson) {
-    const parts = item.split(',')
-    klines.push({
-      date: parts[0],
-      open: parseFloat(parts[1]),
-      close: parseFloat(parts[2]),
-      high: parseFloat(parts[3]),
-      low: parseFloat(parts[4]),
-      volume: parseFloat(parts[5]),
-      amount: parseFloat(parts[6]),
-    })
+function parseTencentKlines(data: any, code: string): { klines: KLine[]; name: string } {
+  const codeKey = Object.keys(data?.data ?? {})[0]
+  const dayData = data?.data?.[codeKey]?.day ?? data?.data?.[codeKey]?.qfqday ?? []
+  return {
+    klines: dayData.map((item: string[]) => ({
+      date: item[0],
+      open: parseFloat(item[1]),
+      close: parseFloat(item[2]),
+      high: parseFloat(item[3]),
+      low: parseFloat(item[4]),
+      volume: parseFloat(item[5]),
+    })),
+    name: code,
   }
-  return { klines, name: data?.data?.name ?? code }
 }
 
-async function fetchFromEastmoney(code: string, market: Market, days: number): Promise<{ klines: KLine[]; name: string }> {
-  const secid = toEastMoneySecid(code, market)
-  const url = `${EASTMONEY_KLINE_URL}?secid=${secid}&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&klt=101&fqt=1&end=20500101&lmt=${days}`
+async function fetchFromTencent(code: string, market: Market, days: number): Promise<{ klines: KLine[]; name: string }> {
+  const tcCode = toTencentCode(code, market)
+  const url = `${TENCENT_KLINE_URL}?param=${tcCode},day,,,${days},qfq`
   const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0', Referer: 'https://quote.eastmoney.com/' },
+    headers: { 'User-Agent': 'Mozilla/5.0', Referer: 'https://finance.qq.com/' },
   })
-  if (!res.ok) throw new Error(`东方财富请求失败: ${res.status}`)
+  if (!res.ok) throw new Error(`腾讯请求失败: ${res.status}`)
   const json = await res.json()
-  if (!json?.data?.klines?.length) throw new Error('东方财富无数据')
-  return parseEastMoneyKline(json, code)
+  if (!json?.data || json.code !== 0) throw new Error('腾讯K线无数据')
+  const result = parseTencentKlines(json, code)
+  if (result.klines.length === 0) throw new Error('腾讯返回空K线')
+  return result
 }
 
 async function fetchFromSinaRealtime(code: string, market: Market): Promise<Partial<StockData>> {
@@ -163,16 +163,16 @@ export async function fetchStockData(code: string, days = 60): Promise<StockData
   const market = detectMarket(code)
   const errors: string[] = []
 
-  // primary: eastmoney history + sina realtime
+  // primary: tencent history + sina realtime
   try {
-    const { klines, name } = await fetchFromEastmoney(code, market, days)
+    const { klines, name } = await fetchFromTencent(code, market, days)
     let realtime: Partial<StockData> = {}
     try {
       realtime = await fetchFromSinaRealtime(code, market)
     } catch {
       realtime = calcLatestFromKlines(klines, name)
     }
-    if (klines.length === 0) throw new Error('东方财富返回空K线')
+    if (klines.length === 0) throw new Error('腾讯返回空K线')
     return {
       code: normalizeCode(code),
       name: realtime.name || name,
@@ -184,10 +184,10 @@ export async function fetchStockData(code: string, days = 60): Promise<StockData
       open: realtime.open ?? klines[klines.length - 1].open,
       volume: realtime.volume ?? klines[klines.length - 1].volume,
       klines,
-      source: 'eastmoney+sina',
+      source: 'tencent+sina',
     }
   } catch (e) {
-    errors.push(`东方财富: ${(e as Error).message}`)
+    errors.push(`腾讯: ${(e as Error).message}`)
   }
 
   // fallback: sina historical
