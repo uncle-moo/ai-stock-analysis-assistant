@@ -36,9 +36,10 @@ export async function sendToFeishu(report: string, cardTitle?: string): Promise<
     body: JSON.stringify(message),
   })
 
-  if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`飞书推送失败: ${res.status} ${body}`)
+  const body = await res.json()
+  console.log('飞书返回:', JSON.stringify(body))
+  if (!res.ok || body.code !== 0) {
+    throw new Error(`飞书推送失败: HTTP ${res.status}, code=${body.code}, msg=${body.msg}`)
   }
 }
 
@@ -62,9 +63,10 @@ export async function sendFeishuCard(
     body: JSON.stringify(message),
   })
 
-  if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`飞书卡片推送失败: ${res.status} ${body}`)
+  const body = await res.json()
+  console.log('飞书返回:', JSON.stringify(body))
+  if (!res.ok || body.code !== 0) {
+    throw new Error(`飞书卡片推送失败: HTTP ${res.status}, code=${body.code}, msg=${body.msg}`)
   }
 }
 
@@ -103,8 +105,9 @@ export async function sendLimitUpReport(data: LimitUpData, htmlUrl: string): Pro
     body: JSON.stringify(message),
   })
 
-  if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`飞书推送失败: ${res.status} ${body}`)
+  const body = await res.json()
+  console.log('飞书返回:', JSON.stringify(body))
+  if (!res.ok || body.code !== 0) {
+    throw new Error(`飞书推送失败: HTTP ${res.status}, code=${body.code}, msg=${body.msg}`)
   }
 }
