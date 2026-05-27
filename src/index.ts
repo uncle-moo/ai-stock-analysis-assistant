@@ -57,7 +57,7 @@ async function main() {
       const report = await analyzeWithLLM(analysis)
       console.log(`  LLM分析完成`)
 
-      parts.push(report.overallTrend)
+      parts.push(`### ${analysis.name}(${analysis.code})\n\n${report.overallTrend}`)
 
       if (i < stocksToAnalyze.length - 1) {
         const delay = 3000

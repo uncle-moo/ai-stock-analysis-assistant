@@ -3,6 +3,7 @@ import { fetchLimitUpData } from './lib/fetch-limit-up.js'
 import { formatLimitUpTable } from './lib/limit-up-formatter.js'
 import { generateLimitUpHTML } from './lib/limit-up-html.js'
 import { sendLimitUpReport } from './lib/feishu-notifier.js'
+import { screenshotHTML } from './lib/screenshot.js'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -31,6 +32,11 @@ async function main() {
     const htmlPath = path.join(outputDir, filename)
     fs.writeFileSync(htmlPath, html, 'utf8')
     console.log(`HTML 已保存至: ${htmlPath}`)
+
+    // 截图保存
+    const pngPath = path.join(outputDir, `limit-up-${today}.png`)
+    await screenshotHTML(htmlPath, pngPath, '.card')
+    console.log(`截图已保存至: ${pngPath}`)
 
     // GitHub 预览链接 (htmlpreview.github.io 可渲染 raw HTML)
     const githubUrl = `https://htmlpreview.github.io/?https://raw.githubusercontent.com/uncle-moo/ai-stock-analysis-assistant/main/output/${filename}`
