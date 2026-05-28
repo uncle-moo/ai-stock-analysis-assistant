@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:#f0f2f5;padding:24px;width:1400px;color:#333;line-height:1.6
+}
+.card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+
+/* Header */
+.hd{
+  background:linear-gradient(135deg,#1a3c4a,#225a6b 50%,#1b5e5c);
+  color:#fff;padding:22px 28px;display:flex;justify-content:space-between;align-items:center
+}
+.hd-l .date{font-size:13px;opacity:.75}
+.hd-l h1{font-size:24px;font-weight:700;letter-spacing:2px;margin-top:2px}
+.hd-r{
+  text-align:center;background:rgba(255,255,255,.1);padding:12px 22px;
+  border-radius:10px;border:1px solid rgba(255,255,255,.15)
+}
+.hd-r .num{font-size:36px;font-weight:800;line-height:1}
+.hd-r .unit{font-size:12px;opacity:.7;margin-top:2px}
+
+/* Content */
+.ct{padding:12px 16px 10px}
+
+/* ===== Unified Table ===== */
+.ct table{width:100%;border-collapse:collapse;table-layout:fixed}
+
+/* thead */
+.ct thead th{
+  padding:6px 4px;font-size:12px;font-weight:700;text-align:center;
+  white-space:nowrap;border-radius:3px 3px 0 0;
+  border-right:1px solid rgba(0,0,0,.06)
+}
+.ct thead th:last-child{border-right:none}
+
+/* tbody */
+.ct tbody td{
+  padding:4px 5px;font-size:13px;
+  border-bottom:1px solid #f0f0f0;
+  border-right:1px solid #eee;vertical-align:top
+}
+.ct tbody td:last-child{border-right:none}
+
+/* Sub-sector group */
+.sg{display:block;margin:2px 0;line-height:1.7}
+.sg-tag{
+  display:inline-block;font-size:10px;color:#888;background:#f5f5f5;
+  padding:0 4px;border-radius:2px;margin-right:4px;vertical-align:middle
+}
+
+/* Board label cell */
+.bl-cell{
+  width:64px;text-align:center;vertical-align:middle !important;
+  padding:6px 4px !important;border-left:4px solid;
+  background:#fafbfc;font-weight:400
+}
+.bl-cell .bn{display:block;font-size:14px;font-weight:700;letter-spacing:1px}
+.bl-cell .bc{display:block;font-size:20px;font-weight:800;color:#333;margin-top:2px}
+
+/* Board row separator */
+.br-first td{border-top:2px solid #e0e0e0}
+.br-first .bl-cell{border-top:2px solid #e0e0e0}
+
+/* Stock name */
+.sn{
+  display:inline-block;padding:2px 4px;border-radius:3px;
+  color:#222;white-space:nowrap;font-size:13px
+}
+.sn.hot{font-weight:700}
+.sn.oz{color:#c62828}
+.sn.p20{color:#1565c0}
+.sn.p30{color:#6a1b9a}
+.sn.hot.oz{font-weight:700;color:#c62828}
+.sn.hot.p20{font-weight:700;color:#1565c0}
+.sn.hot.p30{font-weight:700;color:#6a1b9a}
+
+/* Summary */
+.sm{
+  text-align:center;padding:14px 0 4px;
+  border-top:2px solid #e0e0e0;margin-top:16px;font-size:15px;color:#666
+}
+.sm b{color:#c62828;font-size:24px;margin:0 6px}
+
+/* Footer */
+.ft{
+  background:#fafafa;padding:12px 28px;font-size:12px;color:#aaa;
+  border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center
+}
+.ft .lg{display:flex;gap:14px;flex-wrap:wrap}
+.ft .lg span{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#999}
+.ld{display:inline-block;width:8px;height:8px;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="hd">
+  <div class="hd-l">
+    <div class="date">2026/5/28 周四</div>
+    <h1>涨停热点分布</h1>
+  </div>
+  <div class="hd-r">
+    <div class="num">102</div>
+    <div class="unit">涨停数</div>
+  </div>
+</div>
+
+<div class="ct">
+  <table>
+    <thead><tr><th class="bl-cell"></th><th style="background:#e3f2fd;color:#1565c0">电子科技</th><th style="background:#ffebee;color:#c62828">高端制造</th><th style="background:#e8f5e9;color:#2e7d32">电力新能源</th><th style="background:#f3e5f5;color:#6a1b9a">材料资源</th><th style="background:#fff3e0;color:#e65100">消费</th><th style="background:#e0f7fa;color:#00838f">地产基建</th><th style="background:#eceff1;color:#666">其它</th></tr></thead>
+    <tbody><tr class="br-first">
+      <th class="bl-cell" style="border-left-color:#ef6c00">
+        <span class="bn" style="color:#ef6c00">四连板</span>
+        <span class="bc">3</span>
+      </th>
+      <td><span class="sg"><span class="sg-tag">光学光电</span><span class="sn oz" title="000509">华塑控股</span></span></td><td></td><td><span class="sg"><span class="sg-tag">电力</span><span class="sn" title="600726">华电能源</span></span></td><td></td><td></td><td><span class="sg"><span class="sg-tag">房地产开</span><span class="sn" title="600162">香江控股</span></span></td><td></td>
+    </tr><tr class="br-first">
+      <th class="bl-cell" style="border-left-color:#f9a825">
+        <span class="bn" style="color:#f9a825">三连板</span>
+        <span class="bc">1</span>
+      </th>
+      <td><span class="sg"><span class="sg-tag">元件</span><span class="sn" title="002579">中京电子</span></span></td><td></td><td></td><td></td><td></td><td></td><td></td>
+    </tr><tr class="br-first">
+      <th class="bl-cell" style="border-left-color:#2e7d32">
+        <span class="bn" style="color:#2e7d32">二连板</span>
+        <span class="bc">5</span>
+      </th>
+      <td><span class="sg"><span class="sg-tag">元件</span><span class="sn" title="002484">江海股份</span><span class="sn" title="603989">艾华集团</span></span></td><td><span class="sg"><span class="sg-tag">专用设备</span><span class="sn" title="603011">合锻智能</span></span></td><td><span class="sg"><span class="sg-tag">电力</span><span class="sn" title="000539">粤电力Ａ</span></span><span class="sg"><span class="sg-tag">电池</span><span class="sn" title="603032">德新科技</span></span></td><td></td><td></td><td></td><td></td>
+    </tr><tr class="br-first">
+      <th class="bl-cell" style="border-left-color:#546e7a">
+        <span class="bn" style="color:#546e7a">首板</span>
+        <span class="bc">93</span>
+      </th>
+      <td><span class="sg"><span class="sg-tag">元件</span><span class="sn hot" title="000636">风华高科</span><span class="sn" title="002552">宝鼎科技</span><span class="sn" title="002636">金安国纪</span><span class="sn p20" title="300964">本川智能</span><span class="sn" title="600237">铜峰电子</span></span><span class="sg"><span class="sg-tag">半导体</span><span class="sn" title="600360">华微电子</span><span class="sn" title="600206">有研新材</span><span class="sn p20" title="688172">燕东微</span></span><span class="sg"><span class="sg-tag">军工电子</span><span class="sn" title="603678">火炬电子</span><span class="sn" title="603267">鸿远电子</span></span><span class="sg"><span class="sg-tag">光学光电</span><span class="sn" title="603773">沃格光电</span><span class="sn p20" title="300489">光智科技</span></span><span class="sg"><span class="sg-tag">通信设备</span><span class="sn hot" title="000063">中兴通讯</span><span class="sn hot" title="301205">联特科技</span></span><span class="sg"><span class="sg-tag">IT服务Ⅱ</span><span class="sn oz" title="600589">大位科技</span></span><span class="sg"><span class="sg-tag">互联网电</span><span class="sn" title="002640">跨境通</span></span><span class="sg"><span class="sg-tag">消费电子</span><span class="sn" title="301123">奕东电子</span></span><span class="sg"><span class="sg-tag">电子化学</span><span class="sn hot" title="600330">天通股份</span></span><span class="sg"><span class="sg-tag">其他电子</span><span class="sn" title="002859">洁美科技</span></span></td><td><span class="sg"><span class="sg-tag">通用设备</span><span class="sn" title="000530">冰山冷热</span><span class="sn" title="603757">大元泵业</span><span class="sn" title="600172">黄河旋风</span><span class="sn p20" title="300179">四方达</span><span class="sn" title="002639">雪人集团</span><span class="sn" title="920725">惠丰钻石</span><span class="sn" title="002943">宇晶股份</span><span class="sn" title="002871">伟隆股份</span></span><span class="sg"><span class="sg-tag">汽车零部</span><span class="sn" title="002806">华锋股份</span><span class="sn" title="603006">联明股份</span></span><span class="sg"><span class="sg-tag">自动化设</span><span class="sn" title="002957">科瑞技术</span><span class="sn" title="002975">博杰股份</span></span><span class="sg"><span class="sg-tag">专用设备</span><span class="sn" title="003036">泰坦股份</span><span class="sn" title="601369">陕鼓动力</span></span><span class="sg"><span class="sg-tag">电机Ⅱ</span><span class="sn" title="603988">中电电机</span></span></td><td><span class="sg"><span class="sg-tag">电力</span><span class="sn" title="000791">甘肃能源</span><span class="sn" title="000692">惠天热电</span><span class="sn" title="000600">建投能源</span><span class="sn" title="600032">浙江新能</span><span class="sn" title="600982">宁波能源</span><span class="sn" title="605580">恒盛能源</span></span><span class="sg"><span class="sg-tag">电网设备</span><span class="sn" title="000720">新能泰山</span><span class="sn" title="603050">科林电气</span><span class="sn" title="002350">北京科锐</span><span class="sn" title="603861">白云电器</span><span class="sn" title="002857">三晖电气</span></span><span class="sg"><span class="sg-tag">电池</span><span class="sn p20" title="688006">杭可科技</span><span class="sn" title="600110">诺德股份</span><span class="sn" title="603031">安孚科技</span></span><span class="sg"><span class="sg-tag">光伏设备</span><span class="sn" title="600151">航天机电</span><span class="sn" title="002056">横店东磁</span></span><span class="sg"><span class="sg-tag">炼化及贸</span><span class="sn" title="603353">和顺石油</span></span></td><td><span class="sg"><span class="sg-tag">塑料</span><span class="sn" title="000920">沃顿科技</span><span class="sn" title="000859">国风新材</span><span class="sn" title="002263">大东南</span><span class="sn" title="301565">中仑新材</span></span><span class="sg"><span class="sg-tag">化学制品</span><span class="sn" title="002669">康达新材</span><span class="sn p20" title="300721">怡达股份</span><span class="sn" title="603977">国泰集团</span><span class="sn" title="603110">东方材料</span></span><span class="sg"><span class="sg-tag">玻璃玻纤</span><span class="sn" title="002613">北玻股份</span><span class="sn" title="603256">宏和科技</span><span class="sn hot" title="600176">中国巨石</span></span><span class="sg"><span class="sg-tag">小金属</span><span class="sn hot" title="002428">云南锗业</span><span class="sn" title="601958">金钼股份</span><span class="sn" title="600459">贵研铂业</span></span><span class="sg"><span class="sg-tag">工业金属</span><span class="sn" title="603527">众源新材</span><span class="sn" title="002203">海亮股份</span></span><span class="sg"><span class="sg-tag">化学原料</span><span class="sn" title="600367">红星发展</span></span><span class="sg"><span class="sg-tag">金属新材</span><span class="sn" title="605376">博迁新材</span></span></td><td><span class="sg"><span class="sg-tag">家居用品</span><span class="sn" title="002918">蒙娜丽莎</span></span><span class="sg"><span class="sg-tag">一般零售</span><span class="sn" title="603682">锦和商管</span></span><span class="sg"><span class="sg-tag">服装家纺</span><span class="sn" title="002397">梦洁股份</span></span><span class="sg"><span class="sg-tag">纺织制造</span><span class="sn" title="600527">江南高纤</span></span></td><td><span class="sg"><span class="sg-tag">房地产开</span><span class="sn" title="000090">天健集团</span><span class="sn" title="601588">北辰实业</span><span class="sn hot" title="600246">万通发展</span></span></td><td><span class="sg"><span class="sg-tag">广告营销</span><span class="sn oz" title="002995">天地在线</span><span class="sn" title="002878">元隆雅图</span></span><span class="sg"><span class="sg-tag">环境治理</span><span class="sn" title="002210">飞马国际</span><span class="sn" title="000068">华控赛格</span></span><span class="sg"><span class="sg-tag">动物保健</span><span class="sn" title="002688">金河生物</span></span><span class="sg"><span class="sg-tag">化学纤维</span><span class="sn oz" title="600063">皖维高新</span></span><span class="sg"><span class="sg-tag">通信服务</span><span class="sn" title="000889">中嘉博创</span></span><span class="sg"><span class="sg-tag">其他电源</span><span class="sn" title="002951">金时科技</span></span><span class="sg"><span class="sg-tag">化妆品</span><span class="sn" title="002243">力合科创</span></span><span class="sg"><span class="sg-tag">工程咨询</span><span class="sn" title="603458">勘设股份</span></span><span class="sg"><span class="sg-tag">文娱用品</span><span class="sn" title="002348">高乐股份</span></span><span class="sg"><span class="sg-tag">包装印刷</span><span class="sn" title="003018">金富科技</span></span><span class="sg"><span class="sg-tag">煤炭开采</span><span class="sn" title="601101">昊华能源</span></span><span class="sg"><span class="sg-tag">环保设备</span><span class="sn" title="603324">盛剑科技</span></span><span class="sg"><span class="sg-tag">房屋建设</span><span class="sn" title="000628">高新发展</span></span><span class="sg"><span class="sg-tag">基础建设</span><span class="sn" title="603955">大千生态</span></span><span class="sg"><span class="sg-tag">专业工程</span><span class="sn hot" title="603601">再升科技</span></span></td>
+    </tr></tbody>
+  </table>
+<div class="ft">
+  <div class="lg">
+    <span><b>加粗</b> 权重票/成交&gt;40亿</span>
+    <span style="color:#c62828"><b>红字</b> 一字板</span>
+    <span style="color:#1565c0"><b>蓝字</b> 20%涨幅(创业板/科创板)</span>
+    <span style="color:#6a1b9a"><b>紫字</b> 30%涨幅(北交所)</span>
+  </div>
+</div>
+</div>
+</body>
+</html>
