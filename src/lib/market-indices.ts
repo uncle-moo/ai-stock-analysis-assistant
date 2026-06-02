@@ -21,7 +21,7 @@ export interface MarketOverview {
 }
 
 export interface NorthboundFunds {
-  netInflow: number // 净流入 (单位: 亿元)
+  netInflow: number | null // 净流入 (单位: 亿元)
 }
 
 export interface MarketNews {
@@ -39,8 +39,8 @@ export const INDICES: IndexConfig[] = [
 ]
 
 const TENCENT_KLINE_URL = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get'
-const EASTMONEY_MARKET_URL = 'https://push2.eastmoney.com/api/qt/ulist.rt/get'
 const EASTMONEY_NORTHBOUND_URL = 'https://push2.eastmoney.com/api/qt/kamt.rt/get'
+const EASTMONEY_A_SHARE_LIST_URL = 'https://push2.eastmoney.com/api/qt/clist/get'
 
 function toTencentCode(emSecid: string): string {
   const [prefix, code] = emSecid.split('.')
@@ -58,6 +58,13 @@ function parseTencentKlines(data: any): KLine[] {
     low: parseFloat(item[4]),
     volume: parseFloat(item[5]),
   }))
+}
+
+function toNumber(value: unknown): number | null {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null
+  if (typeof value !== 'string') return null
+  const n = Number(value)
+  return Number.isFinite(n) ? n : null
 }
 
 async function fetchTencentKlines(code: string, days: number): Promise<KLine[]> {
@@ -96,49 +103,78 @@ async function fetchSingleIndex(config: IndexConfig, days = 60): Promise<StockDa
 }
 
 export async function fetchMarketOverview(): Promise<MarketOverview> {
-  const secids = ['1.000001', '0.399001']
+  const pageSize = 1000
+  const fields = 'f3,f6'
+  const fs = 'm:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23'
   let totalTurnover = 0
   let advancing = 0
   let declining = 0
   let unchanged = 0
+  let total = 0
+  let page = 1
 
-  for (const secid of secids) {
-    try {
-      const url = `https://push2.eastmoney.com/api/qt/stock/get?secid=${secid}&fields=f6,f104,f105,f106`
-      const res = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0', Referer: 'https://quote.eastmoney.com/' },
-      })
-      if (!res.ok) continue
-      const json = await res.json()
-      const data = json?.data
-      if (data) {
-        totalTurnover += data.f6 || 0
-        advancing += data.f104 || 0
-        declining += data.f105 || 0
-        unchanged += data.f106 || 0
-      }
-    } catch (e) {
-      console.error(`获取市场数据失败 (${secid}):`, (e as Error).message)
+  while (true) {
+    const params = new URLSearchParams({
+      pn: String(page),
+      pz: String(pageSize),
+      po: '1',
+      np: '1',
+      ut: 'bd1d9ddb04089700cf9c27f6f7426281',
+      fltt: '2',
+      invt: '2',
+      fid: 'f3',
+      fs,
+      fields,
+    })
+    const res = await fetch(`${EASTMONEY_A_SHARE_LIST_URL}?${params}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0', Referer: 'https://quote.eastmoney.com/' },
+    })
+    if (!res.ok) throw new Error(`东方财富全A列表请求失败: ${res.status}`)
+
+    const json = await res.json()
+    const list = json?.data?.diff
+    if (!Array.isArray(list)) throw new Error('东方财富全A列表无数据')
+
+    if (page === 1) total = toNumber(json?.data?.total) ?? list.length
+    if (list.length === 0) break
+
+    for (const item of list) {
+      const changePercent = toNumber(item.f3)
+      const amount = toNumber(item.f6)
+      if (amount != null) totalTurnover += amount
+      if (changePercent == null) continue
+      if (changePercent > 0) advancing++
+      else if (changePercent < 0) declining++
+      else unchanged++
     }
+
+    if (page * pageSize >= total || list.length < pageSize) break
+    page++
   }
 
+  const counted = advancing + declining + unchanged
+  if (totalTurnover <= 0 || counted === 0) {
+    throw new Error(`市场概览数据异常: 成交额=${totalTurnover}, 涨跌统计=${counted}`)
+  }
   return { totalTurnover, advancing, declining, unchanged }
 }
 
 export async function fetchNorthboundFunds(): Promise<NorthboundFunds> {
   try {
-    const url = `https://push2.eastmoney.com/api/qt/kamt.rt/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55,f56`
+    const url = `${EASTMONEY_NORTHBOUND_URL}?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f55,f56`
     const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0', Referer: 'https://quote.eastmoney.com/' },
     })
-    if (!res.ok) return { netInflow: 0 }
+    if (!res.ok) return { netInflow: null }
     const json = await res.json()
-    // f52 是今日净流入 (单位: 万元)
-    const netInflowWan = (json?.data?.s2h?.f52 || 0) + (json?.data?.g2h?.f52 || 0)
+    const s2h = toNumber(json?.data?.s2h?.f52)
+    const g2h = toNumber(json?.data?.g2h?.f52)
+    if (s2h == null && g2h == null) return { netInflow: null }
+    const netInflowWan = (s2h ?? 0) + (g2h ?? 0)
     return { netInflow: netInflowWan / 10000 } // 转换为亿元
   } catch (e) {
     console.error('获取北向资金失败:', (e as Error).message)
-    return { netInflow: 0 }
+    return { netInflow: null }
   }
 }
 
