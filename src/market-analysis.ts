@@ -41,10 +41,11 @@ function formatIndexData(results: IndexAnalysis[]): string {
 
 function buildMarketPrompt(results: IndexAnalysis[], overview: MarketOverview, northbound: NorthboundFunds, news: MarketNews[]): string {
   const indexData = formatIndexData(results)
+  const northboundText = northbound.netInflow == null ? '数据不可用（不要按 0 处理，不纳入资金面判断）' : `${northbound.netInflow.toFixed(2)} 亿元`
   const marketStats = `
 - 两市总成交额：${(overview.totalTurnover / 100000000).toFixed(2)} 亿元
 - 涨跌分布：上涨 ${overview.advancing} 家 | 下跌 ${overview.declining} 家 | 平盘 ${overview.unchanged} 家
-- 北向资金净流入：${northbound.netInflow.toFixed(2)} 亿元
+- 北向资金净流入：${northboundText}
 `
   const newsData = news.map(n => `- [${n.time}] ${n.title}: ${n.summary}`).join('\n')
 

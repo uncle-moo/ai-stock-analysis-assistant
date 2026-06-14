@@ -24,7 +24,7 @@ cp .env.example .env
 
 ## 可用命令
 
-### `pnpm analyze [筛选关键词...]`
+### `pnpm watchlist [筛选关键词...]`
 
 分析自选股列表中的个股，获取实时行情数据，进行技术指标分析（均线、MACD、RSI），再通过 LLM 生成综合报告，最后推送至飞书。
 
@@ -32,13 +32,13 @@ cp .env.example .env
 
 ```bash
 # 分析全部自选股
-pnpm analyze
+pnpm watchlist
 
 # 仅分析指定股票（支持多个关键词）
-pnpm analyze 爱尔眼科
-pnpm analyze 300015
-pnpm analyze ae  # 拼音首字母
-pnpm analyze 爱尔 600703  # 多个关键词
+pnpm watchlist 爱尔眼科
+pnpm watchlist 300015
+pnpm watchlist ae  # 拼音首字母
+pnpm watchlist 爱尔 600703  # 多个关键词
 ```
 
 自选股列表在 `watchlist.json` 中配置。
@@ -96,7 +96,7 @@ pnpm typecheck
 
 ```
 src/
-├── index.ts              # 自选股分析入口
+├── watchlist-analysis.ts # 自选股分析入口
 ├── market-analysis.ts    # 大盘分析入口
 ├── limit-up-analysis.ts  # 涨停板分析入口
 ├── lib/

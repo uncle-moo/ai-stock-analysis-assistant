@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "analyze": "tsx src/index.ts",
+    "watchlist": "tsx src/watchlist-analysis.ts",
     "market": "tsx src/market-analysis.ts",
     "limit-up": "tsx src/limit-up-analysis.ts",
     "typecheck": "tsc --noEmit"
