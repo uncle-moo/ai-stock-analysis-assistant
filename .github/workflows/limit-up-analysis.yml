@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: 安装中文字体
+        run: sudo apt-get update && sudo apt-get install -y fonts-wqy-microhei
+
       - uses: actions/setup-node@v6
         with:
           node-version: 22
